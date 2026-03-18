@@ -8,7 +8,7 @@ const Worker = require("../models/workerModel");
 // @access  Private
 router.get("/", async (req, res) => {
   try {
-    const { date, workerId, gangId, status, startDate, endDate } = req.query;
+    const { date, workerId, gangId, status, startDate, endDate, projectId } = req.query;
 
     // Build query
     const query = {};
@@ -23,6 +23,10 @@ router.get("/", async (req, res) => {
 
     if (gangId) {
       query.gangId = gangId;
+    }
+
+    if (projectId) {
+      query.project = projectId;
     }
 
     if (status) {
@@ -44,6 +48,7 @@ router.get("/", async (req, res) => {
     const attendance = await Attendance.find(query)
       .populate("workerId", "name designation dailySalary")
       .populate("gangId", "gangName teamHead")
+      .populate("project", "projectName projectId")
       .sort({ date: -1 });
 
     const totalSalary = attendance.reduce(
@@ -149,7 +154,7 @@ router.get("/worker/:workerId/summary", async (req, res) => {
 // @access  Private
 router.post("/", async (req, res) => {
   try {
-    const { workerId, date, status, salary, gangId, notes } = req.body;
+    const { workerId, date, status, salary, gangId, notes, projectId } = req.body;
 
     // Validation
     if (!workerId || !date || !status) {
@@ -180,6 +185,7 @@ router.post("/", async (req, res) => {
       // Update existing attendance
       existingAttendance.status = status;
       existingAttendance.gangId = gangId || existingAttendance.gangId;
+      existingAttendance.project = projectId || existingAttendance.project;
       existingAttendance.notes = notes || existingAttendance.notes;
 
       // Update salary
@@ -205,6 +211,7 @@ router.post("/", async (req, res) => {
         date: new Date(date),
         status,
         gangId: gangId || worker.gangId,
+        project: projectId,
         notes,
       };
 
@@ -227,7 +234,8 @@ router.post("/", async (req, res) => {
 
     const populatedAttendance = await Attendance.findById(attendance._id)
       .populate("workerId", "name designation dailySalary")
-      .populate("gangId", "gangName teamHead");
+      .populate("gangId", "gangName teamHead")
+      .populate("project", "projectName projectId");
 
     res.status(existingAttendance ? 200 : 201).json({
       success: true,

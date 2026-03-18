@@ -60,11 +60,16 @@ const Assignments = require("./routes/GangAssignmentRoute");
 app.use("/api/gangAssignments", Assignments);
 
 app.use("/api", require("./routes/workHistory"));
-const todoRoutes = require("./routes/todoRoutes");
-app.use("/api/todos", todoRoutes);
+const expenseRoutes = require("./routes/ExpenseRoute");
+const reminderRoutes = require("./routes/ReminderRoute");
+app.use("/api/expenses", expenseRoutes);
+app.use("/api/reminders", reminderRoutes);
 
 const vendorRoutes = require("./routes/VendorRoutes");
 app.use("/api/vendors", vendorRoutes);
+
+const projectWorkerRoutes = require("./routes/ProjectWorkerRoute");
+app.use("/api/project-workers", projectWorkerRoutes);
 
 // port
 const PORT = process.env.PORT;

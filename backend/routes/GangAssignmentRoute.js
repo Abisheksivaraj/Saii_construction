@@ -9,7 +9,7 @@ const { protect } = require("../middlewares/auth");
 // POST - Create or update daily gang assignment
 router.post("/", protect, async (req, res) => {
   try {
-    const { gangId, workerIds, date } = req.body;
+    const { gangId, workerIds, date, projectId } = req.body;
 
     if (!gangId || !workerIds || workerIds.length === 0) {
       return res.status(400).json({
@@ -58,6 +58,7 @@ router.post("/", protect, async (req, res) => {
       assignment.workers = workerData;
       assignment.gangName = gang.gangName;
       assignment.teamHead = gang.teamHead;
+      assignment.project = projectId || assignment.project;
       await assignment.save();
 
       return res.status(200).json({
@@ -73,6 +74,7 @@ router.post("/", protect, async (req, res) => {
         workers: workerData,
         gangName: gang.gangName,
         teamHead: gang.teamHead,
+        project: projectId,
         createdBy: req.user._id,
       });
 

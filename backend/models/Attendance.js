@@ -33,6 +33,12 @@ const attendanceSchema = new mongoose.Schema(
       ref: "Gang",
       index: true,
     },
+    
+    project: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
+      index: true,
+    },
 
     notes: {
       type: String,
